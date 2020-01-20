@@ -13,4 +13,5 @@ include 'core',
 //        'plugins:javadoc8'
         'plugins:mathjax',
         'plugins:xml',
+        "plugins:kotlin-as-java",
         'testApi'
