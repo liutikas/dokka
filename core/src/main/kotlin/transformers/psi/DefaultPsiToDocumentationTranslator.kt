@@ -3,7 +3,10 @@ package org.jetbrains.dokka.transformers.psi
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.PsiClassReferenceType
 import org.jetbrains.dokka.JavadocParser
-import org.jetbrains.dokka.links.*
+import org.jetbrains.dokka.links.Callable
+import org.jetbrains.dokka.links.DRI
+import org.jetbrains.dokka.links.JavaClassReference
+import org.jetbrains.dokka.links.withClass
 import org.jetbrains.dokka.model.*
 import org.jetbrains.dokka.model.Function
 import org.jetbrains.dokka.pages.PlatformData
@@ -41,7 +44,7 @@ object DefaultPsiToDocumentationTranslator : PsiToDocumentationTranslator {
 
         private fun getComment(psi: PsiNamedElement): List<PlatformInfo> {
             val comment = javadocParser.parseDocumentation(psi)
-            return listOf(BasePlatformInfo(comment, listOf(platformData)))
+            return listOf(BasePlatformInfo(comment, listOf(platformData), null))
         }
 
         fun parseClass(psi: PsiClass, parent: DRI): Class = with(psi) {
@@ -104,17 +107,19 @@ object DefaultPsiToDocumentationTranslator : PsiToDocumentationTranslator {
         private fun parseField(psi: PsiField, parent: DRI): Property {
             val dri = parent.copy(
                 callable = Callable(
-                    psi.name,
+                    psi.name ?: "",
                     JavaClassReference(psi.containingClass?.name.orEmpty()),
                     emptyList()
                 )
             )
             return Property(
                 dri,
-                psi.name,
+                psi.name ?: "",
                 null,
                 null,
-                getComment(psi)
+                getComment(psi),
+                 accessors = emptyList(),
+                type = null
             )
         }
     }
